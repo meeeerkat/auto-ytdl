@@ -68,21 +68,41 @@ function download_new_videos
 {
     for (( i=0; i<$channelsNb; i++ ));
     do
-        echo "youtube-dl ${channelsUrl[$i]} --get-id"
         while IFS= read -r id && [ "$id" != "${lastVideosDownloadedIds[$i]}" ]
         do
-            #youtube-dl $id -f best --no-part
-            echo $id
+            youtube-dl "$id" -f best --no-part
         done < <(youtube-dl "${channelsUrl[$i]}" --get-id 2> /dev/null)
+        lastVideosDownloadedIds[$i]="$id"
     done
 }
 
 
 
+function test_args
+{
+    if [ $# -ne 1 ] || ([ $1 != d ] && [ $1 != u ])
+    then
+        echo "Usage: $0 [ud]"
+        exit 1
+    fi
+}
+
+
+
+
 # MAIN
+test_args $@
+
 read_cache
-download_new_videos
-#update_cache_to_last_videos
-#setup_newly_added_channels
+
+if [ $1 == d ]
+then
+    setup_newly_added_channels
+    download_new_videos
+elif [ $1 == u ]
+then
+    update_cache_to_last_videos
+fi
+
 write_cache
 
