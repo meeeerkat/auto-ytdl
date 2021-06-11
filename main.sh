@@ -14,23 +14,29 @@ function read_cache {
     do
         channel=`echo $association | cut -d , -f 1`
         lastVideoDownloadedId=`echo $association | cut -d , -f 2`
-        cache[$channel]=$lastVideoDownloadedId
+        cache["$channel"]="$lastVideoDownloadedId"
     done < $CACHE_PATH
 }
 function write_cache {
-    echo TODO
+    out=""
+
+    for channel in "${!cache[@]}"
+    do
+        out=${out}${channel},${cache[$channel]}\\n
+    done
+    printf $out > "$CACHE_PATH"
 }
 
 
 
-function download_new_videos {
+function download_new_videos_and_update_cache {
     for channel in "${!cache[@]}"
     do
         videosListUrl=`printf "$VIDEOS_LIST_URL_FORMAT" "$channel"`
         while IFS= read -r id && [ "$id" != "${cache[$channel]}" ]
         do
             echo "$id"
-        done < <(youtube-dl $videosListUrl --get-id)
+        done < <(youtube-dl "$videosListUrl" --get-id)
     done
 }
 
@@ -38,7 +44,6 @@ function download_new_videos {
 
 # MAIN
 read_cache
-download_new_videos
-
-
+#download_new_videos_and_update_cache
+write_cache
 
