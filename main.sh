@@ -44,66 +44,71 @@ function update_cache_entry_to_last_video
 # Updates all entries
 function update_cache_to_last_videos
 {
+    echo "Updating all channels last downloaded videos to last uploaded video"
     for (( i=0; i<$channels_nb; i++ ));
     do
         update_cache_entry_to_last_video $i
     done
+    echo "Update completed"
 }
 # Updates only entries that have no last downloaded video ids
 function setup_newly_added_channels
 {
+    echo "Checking for new channels & setting them up"
     for (( i=0; i<$channels_nb; i++ ));
     do
         if [ ! "${last_videos_downloaded_ids[$i]}" ];
         then
             update_cache_entry_to_last_video $i
+            echo "${names[$i]} last downloaded video was set to last uploaded"
         fi
     done
+    echo "Setup completed"
 }
 
 
 
-function download_new_videos_and_update_cache
+function download_new_videos
 {
+    echo "Searching for new videos & downloading them"
     for (( i=0; i<$channels_nb; i++ ));
     do
-        new_last_video_downloaded_id="$id"
         while IFS= read -r id && [ "$id" != "${last_videos_downloaded_ids[$i]}" ]
         do
             youtube-dl "$id" -f best --no-part
-            new_last_video_downloaded_id="$id"
         done < <(youtube-dl "${channels_url[$i]}" --get-id 2> /dev/null)
-        last_videos_downloaded_ids[$i]="$new_last_video_downloaded_id"
     done
+    echo "Downloads completed"
 }
 
 
 
-function test_args
+function usage
 {
-    if [ $# -ne 1 ] || ([ $1 != d ] && [ $1 != u ])
-    then
-        echo "Usage: $0 [ud]"
-        exit 1
-    fi
+    echo "Usage: $0 [ud]..."
+    exit 1
 }
 
 
 
 
 # MAIN
-test_args $@
 
 read_cache
 
-if [ $1 == d ]
-then
-    setup_newly_added_channels
-    download_new_videos_and_update_cache
-elif [ $1 == u ]
-then
-    update_cache_to_last_videos
-fi
+for op in $@
+do
+    if [ $op == d ]
+    then
+        setup_newly_added_channels
+        download_new_videos
+    elif [ $op == u ]
+    then
+        update_cache_to_last_videos
+    else
+        usage
+    fi
+done
 
 write_cache
 
