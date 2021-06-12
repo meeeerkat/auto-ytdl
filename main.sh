@@ -44,7 +44,7 @@ function update_cache_entry_to_last_video
 # Updates all entries
 function update_cache_to_last_videos
 {
-    echo "Updating all channels last downloaded videos to last uploaded video"
+    echo "Updating cache (non-setup entries will be automatically setup)"
     for (( i=0; i<$channels_nb; i++ ));
     do
         update_cache_entry_to_last_video $i
@@ -54,7 +54,7 @@ function update_cache_to_last_videos
 # Updates only entries that have no last downloaded video ids
 function setup_newly_added_channels
 {
-    echo "Checking for new channels & setting them up"
+    echo "Checking for new channels in cache & setting them up"
     for (( i=0; i<$channels_nb; i++ ));
     do
         if [ ! "${last_videos_downloaded_ids[$i]}" ];
@@ -68,24 +68,35 @@ function setup_newly_added_channels
 
 
 
-function download_new_videos
+function download_new_videos_and_update_cache
 {
     echo "Searching for new videos & downloading them"
     for (( i=0; i<$channels_nb; i++ ));
     do
+        new_last_video_downloaded_id=""
         while IFS= read -r id && [ "$id" != "${last_videos_downloaded_ids[$i]}" ]
         do
+            # The first new video id will be the last downloaded in the chronological order of uploads
+            if [ ! "$new_last_video_downloaded_id" ];
+            then
+                new_last_video_downloaded_id="$id"
+            fi
             youtube-dl "$id" -f best --no-part
         done < <(youtube-dl "${channels_url[$i]}" --get-id 2> /dev/null)
+        # If there was a new video, set its id as the last one downloaded
+        if [ "$new_last_video_downloaded_id" ];
+        then
+            last_videos_downloaded_ids[$i]="$new_last_video_downloaded_id"
+        fi
     done
-    echo "Downloads completed"
+    echo "Downloads & cache update completed"
 }
 
 
 
 function usage
 {
-    echo "Usage: $0 [ud]..."
+    echo "Usage: $0 [ud]"
     exit 1
 }
 
@@ -96,19 +107,16 @@ function usage
 
 read_cache
 
-for op in $@
-do
-    if [ $op == d ]
-    then
-        setup_newly_added_channels
-        download_new_videos
-    elif [ $op == u ]
-    then
-        update_cache_to_last_videos
-    else
-        usage
-    fi
-done
+if [ "$1" == d ]
+then
+    setup_newly_added_channels
+    download_new_videos_and_update_cache
+elif [ "$1" == u ]
+then
+    update_cache_to_last_videos
+else
+    usage
+fi
 
 write_cache
 
