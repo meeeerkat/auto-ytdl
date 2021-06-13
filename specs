@@ -1,7 +1,0 @@
-
-Using youtube-dl & a cache to save the last downloaded video id
-
-Format of the cache:
-name(only for the user reading the file),channelUrl(ending with /videos to get ids in the right chronological order),lastVideoDownloadedId(setup&used only by the program)
-IMPORTANT POINT: URLS NEED TO END WITH /videos <<<<<<<<<<<<<
-

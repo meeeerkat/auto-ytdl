@@ -12,6 +12,19 @@ channels_nb=0
 
 
 # Cache handling
+function check_cache_or_create_empty
+{
+    if [ ! -s "$CACHE_PATH" ];
+    then
+        echo "The cache at $CACHE_PATH doesn't exists or is empty"
+        mkdir "$DIR_PATH" 2> /dev/null
+        touch "$CACHE_PATH"
+        echo "An empty cache has been created at $CACHE_PATH,
+            you need to manually enter the channels urls in it
+            following the guidelines specified in the README.md"
+        exit 1
+    fi
+}
 function read_cache
 {
     while IFS= read -r entry 
@@ -104,7 +117,7 @@ function usage
 
 
 # MAIN
-
+check_cache_or_create_empty
 read_cache
 
 if [ "$1" == d ]
