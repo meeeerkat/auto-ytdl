@@ -9,5 +9,6 @@ name(only for the user reading the file),channelUrl(ending with /videos to get l
 IMPORTANT: urls MUST end with "/videos"  
 
 ## TODO
-Sending SIGINT (Ctrl+C) to the program while downloading a video only stops youtube-dl's current execution but the last downloaded video id is still updated  
+- Sending SIGINT (Ctrl+C) to the program while downloading a video only stops youtube-dl's current execution but the last downloaded video id is still updated
 Fix: Check youtube-dl's return code and act accordingly  
+- Add an error when failing to connect (currently it just behaves like it has properly finished)
