@@ -10,6 +10,9 @@ channels_url=()
 last_videos_downloaded_ids=()
 channels_nb=0
 
+# Options
+verbose=false
+
 
 # Cache handling
 function check_cache_or_create_empty
@@ -47,6 +50,15 @@ function write_cache
 
 
 
+function verbose_name_printing
+{
+    if [ "$verbose" == true ]
+    then
+        echo "${names[$1]} done."
+    fi
+}
+
+
 
 # First argument is the entry's index
 function update_cache_entry_to_last_video
@@ -61,6 +73,7 @@ function update_cache_to_last_videos
     for (( i=0; i<$channels_nb; i++ ));
     do
         update_cache_entry_to_last_video $i
+        verbose_name_printing $i
     done
     echo "Update completed"
 }
@@ -101,6 +114,7 @@ function download_new_videos_and_update_cache
         then
             last_videos_downloaded_ids[$i]="$new_last_video_downloaded_id"
         fi
+        verbose_name_printing $i
     done
     echo "Downloads & cache update completed"
 }
@@ -109,7 +123,7 @@ function download_new_videos_and_update_cache
 
 function usage
 {
-    echo "Usage: $0 [ud]"
+    echo "Usage: $0 [-u|-d] [-v]"
     exit 1
 }
 
@@ -120,15 +134,32 @@ function usage
 check_cache_or_create_empty
 read_cache
 
-if [ "$1" == d ]
+update=false
+download=false
+while getopts "udv" opt; do
+    case $opt in
+        u) update=true ;;
+        d) download=true ;;
+        v) verbose=true ;;
+        h) usage ;;
+        \?)
+            echo "Invalid option: -${OPTARG}."
+            usage
+            ;;
+    esac
+done
+
+if [ "$download" == "$update" ]
+then
+    usage
+fi
+
+if [ "$download" == true ]
 then
     setup_newly_added_channels
     download_new_videos_and_update_cache
-elif [ "$1" == u ]
-then
-    update_cache_to_last_videos
 else
-    usage
+    update_cache_to_last_videos
 fi
 
 write_cache
