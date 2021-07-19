@@ -12,3 +12,4 @@ IMPORTANT: urls MUST end with "/videos"
 - Sending SIGINT (Ctrl+C) to the program while downloading a video only stops youtube-dl's current execution but the last downloaded video id is still updated
 Fix: Check youtube-dl's return code and act accordingly  
 - Add an error when failing to connect (currently it just behaves like it has properly finished)
+- Write a file full of the videos urls to download and then download them (so one can restart the download easily without having to change the cache)
