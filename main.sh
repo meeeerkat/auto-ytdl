@@ -54,7 +54,7 @@ function verbose_name_printing
 {
     if [ "$verbose" == true ]
     then
-        echo "${names[$1]} done."
+        echo "${names[$1]} done ($(($1 + 1))/$channels_nb)."
     fi
 }
 
