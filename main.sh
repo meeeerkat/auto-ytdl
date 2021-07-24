@@ -107,7 +107,7 @@ function download_new_videos_and_update_cache
             then
                 new_last_video_downloaded_id="$id"
             fi
-            youtube-dl "$id" -f best --no-part
+            youtube-dl -f best --no-part -- "$id"
         done < <(youtube-dl "${channels_url[$i]}" --get-id 2> /dev/null)
         # If there was a new video, set its id as the last one downloaded
         if [ "$new_last_video_downloaded_id" ];
