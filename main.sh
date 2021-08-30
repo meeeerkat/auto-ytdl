@@ -43,9 +43,6 @@ function write_cache
     out=""
     for (( i=0; i<$channels_nb; i++ ));
     do
-        echo ${names[$i]} 
-        echo ${channels_url[$i]} 
-        echo ${last_videos_downloaded_ids[$i]} 
         out=${out}"${names[$i]}","${channels_url[$i]}","${last_videos_downloaded_ids[$i]}"\\n
     done
     printf "$out" > "$CACHE_PATH"
