@@ -32,9 +32,9 @@ function read_cache
 {
     while IFS= read -r entry 
     do
-        names+=(`echo "$entry" | cut -d , -f 1`)
+        names+=("`echo "$entry" | cut -d , -f 1`")
         channels_url+=(`echo "$entry" | cut -d , -f 2`)
-        last_videos_downloaded_ids+=("`echo "$entry" | cut -d , -f 3`")
+        last_videos_downloaded_ids+=(`echo "$entry" | cut -d , -f 3`)
     done < $CACHE_PATH
     channels_nb=${#names[@]}
 }
@@ -43,9 +43,12 @@ function write_cache
     out=""
     for (( i=0; i<$channels_nb; i++ ));
     do
-        out=${out}${names[$i]},${channels_url[$i]},${last_videos_downloaded_ids[$i]}\\n
+        echo ${names[$i]} 
+        echo ${channels_url[$i]} 
+        echo ${last_videos_downloaded_ids[$i]} 
+        out=${out}"${names[$i]}","${channels_url[$i]}","${last_videos_downloaded_ids[$i]}"\\n
     done
-    printf $out > "$CACHE_PATH"
+    printf "$out" > "$CACHE_PATH"
 }
 
 
