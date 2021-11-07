@@ -63,7 +63,7 @@ function verbose_name_printing
 # First argument is the entry's index
 function update_cache_entry_to_last_video
 {
-    lastVideoId=`youtube-dl "${channels_url[$1]}" --get-id --playlist-end 1`
+    lastVideoId=`yt-dlp "${channels_url[$1]}" --get-id --playlist-end 1`
     last_videos_downloaded_ids[$1]="$lastVideoId"
 }
 # Updates all entries
@@ -107,8 +107,8 @@ function download_new_videos_and_update_cache
             then
                 new_last_video_downloaded_id="$id"
             fi
-            youtube-dl -f best --no-part -- "$id"
-        done < <(youtube-dl "${channels_url[$i]}" --get-id 2> /dev/null)
+            yt-dlp -f best --no-part -- "$id"
+        done < <(yt-dlp "${channels_url[$i]}" --get-id 2> /dev/null)
         # If there was a new video, set its id as the last one downloaded
         if [ "$new_last_video_downloaded_id" ];
         then
