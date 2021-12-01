@@ -108,7 +108,8 @@ function download_new_videos_and_update_cache
                 new_last_video_downloaded_id="$id"
             fi
             yt-dlp -f best --no-part -- "$id"
-        done < <(yt-dlp "${channels_url[$i]}" --get-id 2> /dev/null)
+        done < <(yt-dlp "${channels_url[$i]}" --print id 2> /dev/null)
+        killall yt-dlp &> /dev/null
         # If there was a new video, set its id as the last one downloaded
         if [ "$new_last_video_downloaded_id" ];
         then
