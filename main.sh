@@ -41,17 +41,6 @@ function update_cache
 }
 
 
-function usage
-{
-    echo "Usage: $0 [-u|-d] [-v]"
-    exit 1
-}
-
-
-
-
-
-
 # MAIN
 check_cache_or_create_empty
 read_cache
