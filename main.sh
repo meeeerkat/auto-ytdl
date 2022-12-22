@@ -46,6 +46,7 @@ check_cache_or_create_empty
 read_cache
 
 yt-dlp --dateafter "$last_download_date" \
+    -f "bestvideo[height<=1080]+bestaudio" \
     --break-on-reject --break-per-input \
     -a "$CHANNELS_LIST_PATH"
 
